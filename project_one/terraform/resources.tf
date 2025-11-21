@@ -38,6 +38,6 @@ resource "aws_lambda_function" "notes_processing_lambda" {
   role          = aws_iam_role.notes_processing_lambda_iam.arn
   handler       = "terraform_notes_processor_lambda.lambda_handler"
   runtime       = "python3.12"
-  filename = "${path.module}/../terraform_notes_processor_lambda.zip"
+  filename = "terraform_notes_processor_lambda.zip"
 }
   
