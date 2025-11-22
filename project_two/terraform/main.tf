@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "bucket" {
 resource "aws_lambda_function" "lambda" {
   function_name = "script"
   handler       = "script.script"
-  runtime       = "python2.12"
+  runtime       = "python3.12"
   role          = aws_iam_role.lambda_role.arn
   filename      = "script.zip"
 }
