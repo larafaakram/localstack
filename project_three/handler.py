@@ -45,7 +45,7 @@ def lambda_handler(event, context):
                     print(f"Inserting message into DynamoDB: {message_body['orderId']}")
                     table.put_item(
                         Item={
-                            'orderId': message_body['orderId'],  # Use the parsed orderId
+                            'orderId': str(message_body['orderId']),  # Use the parsed orderId
                             'item': message_body['item']        # Use the parsed item
                         }
                     )
