@@ -14,3 +14,9 @@ create a dynamodb table:
 create a lambda function
 # aws lambda create-function --function-name my-lambda-function --role arn:aws:iam::000000000000:role/execution_role --runtime python3.12 --handler handler.lambda_handler --zip-file fileb://function.zip --timeout 30
 
+# aws sqs send-message --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue --message-body '{"order_id": "123", "item": "Book"}'
+
+
+# aws sqs receive-message --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue
+
+#  aws lambda invoke --function-name my-lambda-function output.txt

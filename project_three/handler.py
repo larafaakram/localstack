@@ -49,7 +49,6 @@ def lambda_handler(event, context):
                             'item': message_body['item']        # Use the parsed item
                         }
                     )
-                    demo = table.get_item(Key={'orderId': message_body['orderId']})
                     print(f"Successfully inserted message into DynamoDB: {message_body['orderId']}")
                 except Exception as db_error:
                     print(f"Error inserting message into DynamoDB: {db_error}")
@@ -70,7 +69,6 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'body': 'SQS messages processed and stored in DynamoDB successfully!',
-            'demo_table_item': demo
         }
 
     except Exception as e:
