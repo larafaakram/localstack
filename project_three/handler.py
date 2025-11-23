@@ -5,7 +5,7 @@ import json
 sqs = boto3.client('sqs', endpoint_url='http://sqs.us-east-1.localhost.localstack.cloud:4566')
 
 # Configure the DynamoDB client to connect to LocalStack
-dynamodb = boto3.resource('dynamodb', endpoint_url='http://host.docker.internal:4566')
+dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:4566')
 
 # Replace with your LocalStack SQS queue URL
 QUEUE_URL = 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue'
