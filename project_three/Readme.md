@@ -19,4 +19,7 @@ create a lambda function
 
 # aws sqs receive-message --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue
 
-#  aws lambda invoke --function-name my-lambda-function output.txt
+
+# aws lambda invoke --function-name my-lambda-function output.txt
+
+# aws dynamodb scan --table-name Orders 

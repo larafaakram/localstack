@@ -42,14 +42,14 @@ def lambda_handler(event, context):
 
                 # Insert the message into the DynamoDB table
                 try:
-                    print(f"Inserting message into DynamoDB: {message_body['orderId']}")
+                    print(f"Inserting message into DynamoDB: {message_body['order_id']}")
                     table.put_item(
                         Item={
-                            'orderId': str(message_body['orderId']),  # Use the parsed orderId
+                            'orderId': str(message_body['order_id']),  # Use the parsed orderId
                             'item': message_body['item']        # Use the parsed item
                         }
                     )
-                    print(f"Successfully inserted message into DynamoDB: {message_body['orderId']}")
+                    print(f"Successfully inserted message into DynamoDB: {message_body['order_id']}")
                 except Exception as db_error:
                     print(f"Error inserting message into DynamoDB: {db_error}")
 
