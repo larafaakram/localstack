@@ -5,7 +5,9 @@ import json
 sqs = boto3.client('sqs', endpoint_url='http://sqs.us-east-1.localhost.localstack.cloud:4566')
 
 # Configure the DynamoDB client to connect to LocalStack
-dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:4566')
+dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:4566', region_name="us-east-1",
+                          aws_access_key_id="test",
+                          aws_secret_access_key="test")
 
 # Replace with your LocalStack SQS queue URL
 QUEUE_URL = 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue'
@@ -52,6 +54,7 @@ def lambda_handler(event, context):
                     print(f"Successfully inserted message into DynamoDB: {message_body['order_id']}")
                 except Exception as db_error:
                     print(f"Error inserting message into DynamoDB: {db_error}")
+
 
                 # Delete the message after processing
                 try:
