@@ -2,10 +2,10 @@ import boto3
 import json
 
 # Configure the SQS client to connect to LocalStack
-sqs = boto3.client('sqs', endpoint_url='http://sqs.us-east-1.localhost.localstack.cloud:4566')
+sqs = boto3.client('sqs', endpoint_url='http://host.docker.internal:4566')
 
 # Configure the DynamoDB client to connect to LocalStack
-dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:4566', region_name="us-east-1",
+dynamodb = boto3.resource('dynamodb', endpoint_url='http://host.docker.internal:4566', region_name="us-east-1",
                           aws_access_key_id="test",
                           aws_secret_access_key="test")
 
