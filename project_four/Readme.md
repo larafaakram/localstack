@@ -1,0 +1,14 @@
+
+This my project four in the localStack env
+
+link: https://www.udemy.com/course/aws-serverless-course
+
+
+## create table dynamodb
+
+# aws dynamodb create-table --table-name CoffeeShop --attribute-definitions AttributeName=coffeeId,AttributeType=S --key-schema AttributeName=coffeeId,KeyType=HASH --billing-mode PAY_PER_REQUEST
+
+# aws dynamodb put-item --table-name coffeeShop --item '{"coffeeId": {"S": "C001"}, "name": {"S": "Espresso"}, "price": {"N": "4.50"}, "available": {"BOOL": true}}'
+
+## Create IAM role
+

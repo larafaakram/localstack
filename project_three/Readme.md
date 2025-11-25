@@ -17,9 +17,19 @@ create a lambda function
 # aws sqs send-message --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue --message-body '{"order_id": "123", "item": "Book"}'
 
 
-# aws sqs receive-message --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue
-
-
 # aws lambda invoke --function-name my-lambda-function output.txt
 
+## Resource Inspection:
+
+# aws sqs receive-message --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-queue
+# aws dynamodb describe-table --table-name Orders
 # aws dynamodb scan --table-name Orders 
+
+
+# docker ps 
+# docker inspect id_container | grep -A 20 localstack_default
+"Aliases": [
+    "home-localstack",
+    "localstack"
+    ],
+# These aliases must be used in our handler function where they can be used by executing the lambda function.
