@@ -11,4 +11,6 @@ link: https://www.udemy.com/course/aws-serverless-course
 # aws dynamodb put-item --table-name coffeeShop --item '{"coffeeId": {"S": "C001"}, "name": {"S": "Espresso"}, "price": {"N": "4.50"}, "available": {"BOOL": true}}'
 
 ## Create IAM role
+# aws iam create-role --role-name CoffeeShopRole --assume-role-policy-document file://trust-policy.json
 
+## Create lambda function

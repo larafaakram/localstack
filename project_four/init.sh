@@ -1,4 +1,3 @@
-
 #/bin/bash
 
 echo "Initializing Project Four..."
