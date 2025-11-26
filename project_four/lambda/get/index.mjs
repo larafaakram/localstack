@@ -4,7 +4,7 @@ import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
-export const main = async (event) => {
+export const getCoffee = async (event) => {
   const command = new GetCommand({
     TableName: "CoffeeShop",
     Key: {
