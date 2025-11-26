@@ -14,3 +14,7 @@ link: https://www.udemy.com/course/aws-serverless-course
 # aws iam create-role --role-name CoffeeShopRole --assume-role-policy-document file://trust-policy.json
 
 ## Create lambda function
+# aws lambda create-function --function-name getCoffee --role arn:aws:iam::000000000000:role/CoffeeShopRole --runtime nodejs22.x --handler handler.getCoffee --zip-file fileb://get.zip --timeout 90
+
+# Update lambda function code
+# aws lambda update-function-code --function-name  getCoffee --zip-file fileb://get.zip
