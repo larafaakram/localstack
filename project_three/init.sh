@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 echo "Initializing Project Three..."
 # Add your initialization commands here
