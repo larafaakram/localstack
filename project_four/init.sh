@@ -25,7 +25,7 @@ rest_api_id=$(aws apigateway create-rest-api --name $rest_api_name --description
 resource_id=$(aws apigateway get-resources --rest-api-id $rest_api_id --query 'items[0].id' --output text)
 
 # Create route resources
-resource_coffee_id=$(aws apigateway create-resource --rest-api-id $rest_api_name --parent-id $resource_id --path-part "coffee" --query 'id' --output text)
+resource_coffee_id=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_id --path-part "coffee" --query 'id' --output text)
 
 aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method GET --authorization-type NONE
 
