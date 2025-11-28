@@ -31,14 +31,18 @@ resource_id=$(aws apigateway get-resources --rest-api-id $rest_api_id --query 'i
 # Create route resources: /coffee
 resource_coffee_one=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_id --path-part "coffee" --query 'id' --output text)
 resource_coffee_get_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --authorization-type NONE --request-parameters "method.request.path.id=true")
+echo "Method ID: if exist" $resource_coffee_get_one
 
-aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_get_one --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations"
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations"
+# CHECKPOINT: Verify the method created
+aws apigateway get-method --rest-api-id $api_rest_id --resource-id $resource_coffee_one --http-method GET
+
 
 # Create route resources: /coffee/id
 resource_coffee_two=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_coffee_one --path-part "id" --query 'id' --output text)
 resource_coffee_get_two=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_two --http-method GET --authorization-type NONE --request-parameters "method.request.path.id=true")
 
-aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_get_two --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations"
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_two --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations"
 
 # Add permission for API Gateway to invoke the Lambda function
 aws lambda add-permission --function-name getCoffee --statement-id apigateway-test-invoke --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:*:$rest_api_id/*/*/coffee/*"
