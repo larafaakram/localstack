@@ -30,12 +30,12 @@ resource_id=$(aws apigateway get-resources --rest-api-id $rest_api_id --query 'i
 # Create route resources: /coffee and /coffee/id
 # Create route resources: /coffee
 resource_coffee_one=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_id --path-part "coffee" --query 'id' --output text)
-resource_coffee_get_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --authorization-type NONE --request-parameters "method.request.path.coffee=true")
+resource_coffee_get_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --authorization-type NONE --request-parameters method.request.path.coffee=true)
 aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_get_one --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations" --request-parameters "integration.request.path.coffee=method.request.path.coffee"
 
 # Create route resources: /coffee/id
 resource_coffee_two=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_coffee_one --path-part "id" --query 'id' --output text)
-resource_coffee_get_two=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_two --http-method GET --authorization-type NONE --request-parameters "method.request.path.coffee.id=true")
+resource_coffee_get_two=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_two --http-method GET --authorization-type NONE --request-parameters method.request.path.coffee.id=true)
 aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_get_two --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations" --request-parameters "integration.request.path.coffee.id=method.request.path.coffee.id"
 
 # Add permission for API Gateway to invoke the Lambda function
