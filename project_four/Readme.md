@@ -18,3 +18,6 @@ link: https://www.udemy.com/course/aws-serverless-course
 
 # Update lambda function code
 # aws lambda update-function-code --function-name  getCoffee --zip-file fileb://get.zip
+
+
+# aws apigateway get-rest-apis
