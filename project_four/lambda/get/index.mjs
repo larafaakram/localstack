@@ -48,4 +48,4 @@ const getCoffee = async (event) => {
 
 }
 
-module.exports = { getCoffee };
+export  { getCoffee };

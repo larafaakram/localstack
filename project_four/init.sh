@@ -31,7 +31,7 @@ resource_id=$(aws apigateway get-resources --rest-api-id $rest_api_id --query 'i
 # Create route resources: /coffee
 resource_coffee_one=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_id --path-part "coffee" --query 'id' --output text)
 resource_coffee_get_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --authorization-type NONE --request-parameters "method.request.path.id=true")
-echo "Method ID: if exist" $resource_coffee_get_one
+
 
 aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:getCoffee/invocations"
 # CHECKPOINT: Verify the method created
