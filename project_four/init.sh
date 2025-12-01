@@ -56,25 +56,36 @@ aws lambda create-function --function-name postCoffee --role arn:aws:iam::000000
 # Get the ARN of the created Lambda function
 LAMBDA_ARN=$(aws lambda get-function --function-name postCoffee --query 'Configuration.FunctionArn' --output text)
 # For Update lambda function code we can use the below command
-#aws lambda update-function-code --function-name  getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip
+#aws lambda update-function-code --function-name  postCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/post.zip
 
 # Create route resource: /coffee for POST method
 resource_coffee_post_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method POST --authorization-type NONE --request-parameters "method.request.path.id=true")
-
+# Add integration for POST method
 aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method POST --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:postCoffee/invocations"
-
+# Add permission for API Gateway to invoke the Lambda function
 aws lambda add-permission --function-name postCoffee --statement-id apigateway-post-invoke --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:*:$rest_api_id/*/*/coffee/*"
 
-# Deploy the API
+# Update lambda function updateCoffee for UpdateItem in CoffeeShop table
+aws lambda create-function --function-name updateCoffee --role arn:aws:iam::000000000000:role/CoffeeShopRole --runtime nodejs22.x --handler index.updateCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/update.zip --timeout 90
+
+
+
+
+# Deploy the API:
+# Note: we must create a deployment every time we make changes to the API (e.g., adding resources or methods)
 aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 
 
 
 
 
+###
+# Add Item using POST method
+curl -X POST http://hnpctuzurp.execute-api.localhost.localstack.cloud:4566/dev/coffee/ -H "Content-Type: application/json" -d '{"coffeeId": "C003","name": "American","price": 7.50,"available": true}'
 
-
-
+# Get Item using GET method
+curl -X GET http://hnpctuzurp.execute-api.localhost.localstack.cloud:4566/dev/coffee/C002
+curl -X GET http://hnpctuzurp.execute-api.localhost.localstack.cloud:4566/dev/coffee/
 
 
 
