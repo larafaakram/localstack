@@ -16,7 +16,7 @@ const createResponse = (statusCode, body) => {
     };
 };
 
-export const createCoffee = async (event) => {
+export const postCoffee = async (event) => {
     const { body } = event;
     const { coffeeId, name, price, available } = JSON.parse(body || "{}");
 
@@ -53,3 +53,4 @@ export const createCoffee = async (event) => {
     }
 
 }
+export  { postCoffee };

@@ -13,7 +13,7 @@ aws dynamodb put-item --table-name CoffeeShop --item '{"coffeeId": {"S": "C001"}
 # Create IAM Role
 aws iam create-role --role-name CoffeeShopRole --assume-role-policy-document file:///etc/localstack/init/ready.d/others/trust-policy.json
 
-# Create lambda function
+# Create lambda function for GetItem in CoffeeShop table
 aws lambda create-function --function-name getCoffee --role arn:aws:iam::000000000000:role/CoffeeShopRole --runtime nodejs22.x --handler index.getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip --timeout 90
 
 # Get the ARN of the created Lambda function
@@ -27,7 +27,7 @@ description="API for my Lambda function"
 rest_api_id=$(aws apigateway create-rest-api --name $rest_api_name --description "$description" --query 'id' --output text)
 resource_id=$(aws apigateway get-resources --rest-api-id $rest_api_id --query 'items[0].id' --output text)
 
-# Create route resources: /coffee and /coffee/id
+# Create route resources : /coffee and /coffee/id
 # Create route resources: /coffee
 resource_coffee_one=$(aws apigateway create-resource --rest-api-id $rest_api_id --parent-id $resource_id --path-part "coffee" --query 'id' --output text)
 resource_coffee_get_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method GET --authorization-type NONE --request-parameters "method.request.path.id=true")
@@ -49,6 +49,21 @@ aws lambda add-permission --function-name getCoffee --statement-id apigateway-te
 aws lambda add-permission --function-name getCoffee --statement-id apigateway-test-invoke-id --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:*:$rest_api_id/*/*/coffee/{id}"
 # CHECKPOINT: Verify the policy added to the Lambda function
 aws lambda get-policy --function-name getCoffee
+
+# Create lambda function postCoffee for PutItem in CoffeeShop table
+aws lambda create-function --function-name postCoffee --role arn:aws:iam::000000000000:role/CoffeeShopRole --runtime nodejs22.x --handler index.postCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/post.zip --timeout 90
+
+# Get the ARN of the created Lambda function
+LAMBDA_ARN=$(aws lambda get-function --function-name postCoffee --query 'Configuration.FunctionArn' --output text)
+# For Update lambda function code we can use the below command
+#aws lambda update-function-code --function-name  getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip
+
+# Create route resource: /coffee for POST method
+resource_coffee_post_one=$(aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method POST --authorization-type NONE --request-parameters "method.request.path.id=true")
+
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method POST --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:postCoffee/invocations"
+
+aws lambda add-permission --function-name postCoffee --statement-id apigateway-post-invoke --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:*:$rest_api_id/*/*/coffee/*"
 
 # Deploy the API
 aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
