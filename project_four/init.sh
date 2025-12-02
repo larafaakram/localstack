@@ -124,6 +124,19 @@ aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 
 echo -e "$DATA"
 
+# Add a layer for Lambda functions
+aws lambda publish-layer-version --layer-name DynamodbLayer --zip-file fileb:///root/localstack/localstack/others/layer.zip --compatible-runtimes nodejs22.x
+
+# Update Lambda functions to use the layer
+layer_arn=$(aws lambda get-layer-version --layer-name DynamodbLayer --version-number 1 --query 'LayerVersionArn' --output text)
+aws lambda update-function-configuration --function-name getCoffee --layers $layer_arn
+aws lambda update-function-configuration --function-name postCoffee --layers $layer_arn
+aws lambda update-function-configuration --function-name updateCoffee --layers $layer_arn
+aws lambda update-function-configuration --function-name deleteCoffee --layers $layer_arn
+
+
+aws lambda update-function-code --function-name  getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip
+
 ## Testing the API Endpoints using curl commands
 
 # Add Item using POST method
