@@ -1,7 +1,7 @@
 #!/bin/bash
 
 alias aws="aws --endpoint-url=http://localhost:4566"
-DATA = "Resource initialized \n"
+DATA="Resources initialized: \n"
 echo "Initializing Project Four..."
 
 #### DynamoDB Table Creation and Item Insertion ####
@@ -95,7 +95,7 @@ DATA+="Lambda Function Created: updateCoffee with ARN: $updateCoffee_ARN \n"
 
 aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method PUT --authorization-type NONE --request-parameters "method.request.path.id=true"
 # Add integration for PUT method
-aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method PUT --type AWS_PROXY --integration-http-method PUT --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:updateCoffee/invocations"
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method PUT --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:updateCoffee/invocations"
 # Add permission for API Gateway to invoke the Lambda function
 aws lambda add-permission --function-name updateCoffee --statement-id apigateway-put-coffee --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:*:$rest_api_id/*/*/coffee/*"
 
@@ -122,7 +122,7 @@ DATA+="API Gateway Method Created: DELETE /coffee/{id} \n"
 # Note: we must create a deployment every time we make changes to the API (e.g., adding resources or methods)
 aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 
-
+echo -e "$DATA"
 
 ## Testing the API Endpoints using curl commands
 
@@ -136,7 +136,8 @@ aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 # Update Item using PUT method 
 # curl -X PUT http://$rest_api_id.execute-api.localhost.localstack.cloud:4566/dev/coffee/C003 -H "Content-Type: application/json" -d '{"name": "Latte","price": 4.90,"available": false}'
 
-
+# DELETE Item using DELETE method
+# curl -X DELETE http://$rest_api_id.execute-api.localhost.localstack.cloud:4566/dev/coffee/C003
 
 
 
