@@ -122,10 +122,11 @@ DATA+="API Gateway Method Created: DELETE /coffee/{id} \n"
 # Note: we must create a deployment every time we make changes to the API (e.g., adding resources or methods)
 aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 
-echo -e "$DATA"
 
 # Add a layer for Lambda functions
 aws lambda publish-layer-version --layer-name DynamodbLayer --zip-file fileb:///etc/localstack/init/ready.d/others/layer.zip --compatible-runtimes nodejs22.x
+
+DATA+="Lambda Layer Created: DynamodbLayer \n"
 
 # Update Lambda functions to use the layer
 layer_arn=$(aws lambda get-layer-version --layer-name DynamodbLayer --version-number 1 --query 'LayerVersionArn' --output text)
@@ -134,6 +135,9 @@ aws lambda update-function-configuration --function-name postCoffee --layers $la
 aws lambda update-function-configuration --function-name updateCoffee --layers $layer_arn
 aws lambda update-function-configuration --function-name deleteCoffee --layers $layer_arn
 
+DATA+="Lambda Layer Added and Configured for all Lambda functions \n"
+
+echo -e "$DATA"
 
 #aws lambda update-function-code --function-name  getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip
 
