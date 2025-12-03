@@ -1,4 +1,18 @@
-import { docClient, GetCommand, ScanCommand, createResponse } from '/opt/layer/nodejs/utils.mjs';
+//import { docClient, GetCommand, ScanCommand, createResponse } from '/opt/layer/nodejs/utils.mjs';
+import { DynamoDBClient } from "/opt/nodejs/node_modules/@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, ScanCommand } from "/opt/nodejs/node_modules/@aws-sdk/lib-dynamodb";
+
+const client = new DynamoDBClient({});
+const docClient = DynamoDBDocumentClient.from(client);
+
+const createResponse = (statusCode, body) => {
+    const responseBody = JSON.stringify(body);
+    return {
+        statusCode,
+        headers: { "Content-Type": "application/json" },
+        body: responseBody,
+    };
+};
 
 const tableName = process.env.tableName || "CoffeeShop";
 
