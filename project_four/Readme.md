@@ -21,3 +21,6 @@ link: https://www.udemy.com/course/aws-serverless-course
 
 
 # aws apigateway get-rest-apis
+
+
+### Localstack does not support lambda layer

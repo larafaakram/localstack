@@ -129,7 +129,7 @@ aws lambda publish-layer-version --layer-name DynamodbLayer --zip-file fileb:///
 DATA+="Lambda Layer Created: DynamodbLayer \n"
 
 # Update Lambda functions to use the layer
-layer_arn=$(aws lambda get-layer-version --layer-name DynamodbLayer --version-number 3 --query 'LayerVersionArn' --output text)
+layer_arn=$(aws lambda get-layer-version --layer-name DynamodbLayer --version-number 1 --query 'LayerVersionArn' --output text)
 aws lambda update-function-configuration --function-name getCoffee --layers $layer_arn
 aws lambda update-function-configuration --function-name postCoffee --layers $layer_arn
 aws lambda update-function-configuration --function-name updateCoffee --layers $layer_arn
