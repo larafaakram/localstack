@@ -111,7 +111,7 @@ DATA+="Lambda Function Created: deleteCoffee with ARN: $deleteCoffee_ARN \n"
 
 aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method DELETE --authorization-type NONE --request-parameters "method.request.path.id=true"
 # Add integration for PUT method
-aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method DELETE --type AWS_PROXY --integration-http-method DELETE --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:deleteCoffee/invocations"
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method DELETE --type AWS_PROXY --integration-http-method POST --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:deleteCoffee/invocations"
 # Add permission for API Gateway to invoke the Lambda function
 aws lambda add-permission --function-name deleteCoffee --statement-id apigateway-delete-coffee --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:*:$rest_api_id/*/*/coffee/*"
 
@@ -123,21 +123,88 @@ DATA+="API Gateway Method Created: DELETE /coffee/{id} \n"
 aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 
 
-# Add a layer for Lambda functions
-aws lambda publish-layer-version --layer-name DynamodbLayer --zip-file fileb:///etc/localstack/init/ready.d/others/layer.zip --compatible-runtimes nodejs22.x
+### Lambda Layer Not Supported in LocalStack Community Edition ###
 
-DATA+="Lambda Layer Created: DynamodbLayer \n"
+# Add a layer for Lambda functions
+#aws lambda publish-layer-version --layer-name DynamodbLayer --zip-file fileb:///etc/localstack/init/ready.d/others/layer.zip --compatible-runtimes nodejs22.x
+
+#DATA+="Lambda Layer Created: DynamodbLayer \n"
 
 # Update Lambda functions to use the layer
-layer_arn=$(aws lambda get-layer-version --layer-name DynamodbLayer --version-number 1 --query 'LayerVersionArn' --output text)
-aws lambda update-function-configuration --function-name getCoffee --layers $layer_arn
-aws lambda update-function-configuration --function-name postCoffee --layers $layer_arn
-aws lambda update-function-configuration --function-name updateCoffee --layers $layer_arn
-aws lambda update-function-configuration --function-name deleteCoffee --layers $layer_arn
+#layer_arn=$(aws lambda get-layer-version --layer-name DynamodbLayer --version-number 1 --query 'LayerVersionArn' --output text)
+#aws lambda update-function-configuration --function-name getCoffee --layers $layer_arn
+#aws lambda update-function-configuration --function-name postCoffee --layers $layer_arn
+#aws lambda update-function-configuration --function-name updateCoffee --layers $layer_arn
+#aws lambda update-function-configuration --function-name deleteCoffee --layers $layer_arn
 
-DATA+="Lambda Layer Added and Configured for all Lambda functions \n"
+#DATA+="Lambda Layer Added and Configured for all Lambda functions \n"
 
-echo -e "$DATA"
+#echo -e "$DATA"
+
+#### Enable CORS for API Gateway ####
+ORIGIN="http://localhost:5173"
+LS="--endpoint-url http://localhost:4566"
+
+### Add CORS to /coffee
+# OPTIONS method
+aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --authorization-type NONE
+
+# OPTIONS → MOCK integration
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --type MOCK --request-templates '{ "application/json": "{\"statusCode\": 200}" }'
+
+# Method response
+aws apigateway put-method-response --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --status-code 200 \ 
+--response-parameters '{"method.response.header.Access-Control-Allow-Origin": true,
+                        "method.response.header.Access-Control-Allow-Methods": true,
+                        "method.response.header.Access-Control-Allow-Headers": true}'
+
+# Integration response (CORS headers)
+aws apigateway put-integration-response --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --status-code 200 \ 
+--response-parameters "{\"method.response.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
+                        \"method.response.header.Access-Control-Allow-Methods\":\"GET,POST,PUT,DELETE,OPTIONS\",
+                        \"method.response.header.Access-Control-Allow-Headers\":\"Content-Type\"}"
+
+### Add CORS to /coffee/{id}
+aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --authorization-type NONE
+
+# OPTIONS → MOCK integration
+aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --type MOCK --request-templates '{ "application/json": "{\"statusCode\": 200}" }'
+
+# Method response
+aws apigateway put-method-response --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --status-code 200 \ 
+--response-parameters '{"method.response.header.Access-Control-Allow-Origin": true,
+                        "method.response.header.Access-Control-Allow-Methods": true,
+                        "method.response.header.Access-Control-Allow-Headers": true}'
+
+# Integration response (CORS headers)
+aws apigateway put-integration-response --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --status-code 200 \ 
+--response-parameters "{\"method.response.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
+                        \"method.response.header.Access-Control-Allow-Methods\":\"GET,POST,PUT,DELETE,OPTIONS\",
+                        \"method.response.header.Access-Control-Allow-Headers\":\"Content-Type\"}"
+
+### Add global CORS for 4XX & 5XX
+aws apigateway put-gateway-response --rest-api-id $rest_api_id --response-type DEFAULT_4XX \ 
+--response-parameters "{\"gatewayresponse.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
+                        \"gatewayresponse.header.Access-Control-Allow-Headers\":\"*\",
+                        \"gatewayresponse.header.Access-Control-Allow-Methods\":\"*\"}"
+
+aws apigateway put-gateway-response --rest-api-id $rest_api_id --response-type DEFAULT_5XX \ 
+--response-parameters "{\"gatewayresponse.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
+                        \"gatewayresponse.header.Access-Control-Allow-Headers\":\"*\",
+                        \"gatewayresponse.header.Access-Control-Allow-Methods\":\"*\"}"
+
+### Deploy again
+
+aws apigateway create-deployment --rest-api-id $rest_api_id  --stage-name dev
+
+
+
+
+
+
+
+
+
 
 #aws lambda update-function-code --function-name  getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip
 
