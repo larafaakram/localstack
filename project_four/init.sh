@@ -139,13 +139,12 @@ aws apigateway create-deployment --rest-api-id $rest_api_id --stage-name dev
 
 #DATA+="Lambda Layer Added and Configured for all Lambda functions \n"
 
-#echo -e "$DATA"
 
 #### Enable CORS for API Gateway ####
 ORIGIN="http://localhost:5173"
 LS="--endpoint-url http://localhost:4566"
 
-### Add CORS to /coffee
+### Add CORS to /coffee 
 # OPTIONS method
 aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --authorization-type NONE
 
@@ -153,17 +152,18 @@ aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_cof
 aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --type MOCK --request-templates '{ "application/json": "{\"statusCode\": 200}" }'
 
 # Method response
-aws apigateway put-method-response --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --status-code 200 \ 
---response-parameters '{"method.response.header.Access-Control-Allow-Origin": true,
-                        "method.response.header.Access-Control-Allow-Methods": true,
-                        "method.response.header.Access-Control-Allow-Headers": true}'
-
+aws apigateway put-method-response --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --status-code 200 \
+  --response-parameters '{"method.response.header.Access-Control-Allow-Origin": true,
+                          "method.response.header.Access-Control-Allow-Methods": true,
+                          "method.response.header.Access-Control-Allow-Headers": true}'
+						  
 # Integration response (CORS headers)
-aws apigateway put-integration-response --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --status-code 200 \ 
---response-parameters "{\"method.response.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
-                        \"method.response.header.Access-Control-Allow-Methods\":\"GET,POST,PUT,DELETE,OPTIONS\",
-                        \"method.response.header.Access-Control-Allow-Headers\":\"Content-Type\"}"
+aws apigateway put-integration-response --rest-api-id $rest_api_id --resource-id $resource_coffee_one --http-method OPTIONS --status-code 200 \
+  --response-parameters "{\"method.response.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\", 
+                          \"method.response.header.Access-Control-Allow-Methods\":\"GET,POST,PUT,DELETE,OPTIONS\", 
+                          \"method.response.header.Access-Control-Allow-Headers\":\"Content-Type\"}"
 
+						  
 ### Add CORS to /coffee/{id}
 aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --authorization-type NONE
 
@@ -171,33 +171,36 @@ aws apigateway put-method --rest-api-id $rest_api_id --resource-id $resource_cof
 aws apigateway put-integration --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --type MOCK --request-templates '{ "application/json": "{\"statusCode\": 200}" }'
 
 # Method response
-aws apigateway put-method-response --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --status-code 200 \ 
---response-parameters '{"method.response.header.Access-Control-Allow-Origin": true,
-                        "method.response.header.Access-Control-Allow-Methods": true,
-                        "method.response.header.Access-Control-Allow-Headers": true}'
-
+aws apigateway put-method-response --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --status-code 200 \
+  --response-parameters '{"method.response.header.Access-Control-Allow-Origin": true,
+                          "method.response.header.Access-Control-Allow-Methods": true,
+                          "method.response.header.Access-Control-Allow-Headers": true}'
+						  
 # Integration response (CORS headers)
-aws apigateway put-integration-response --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --status-code 200 \ 
---response-parameters "{\"method.response.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
-                        \"method.response.header.Access-Control-Allow-Methods\":\"GET,POST,PUT,DELETE,OPTIONS\",
-                        \"method.response.header.Access-Control-Allow-Headers\":\"Content-Type\"}"
+aws apigateway put-integration-response --rest-api-id $rest_api_id --resource-id $resource_coffee_id --http-method OPTIONS --status-code 200 \
+  --response-parameters "{\"method.response.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\", 
+                          \"method.response.header.Access-Control-Allow-Methods\":\"GET,POST,PUT,DELETE,OPTIONS\", 
+                          \"method.response.header.Access-Control-Allow-Headers\":\"Content-Type\"}"
+
 
 ### Add global CORS for 4XX & 5XX
-aws apigateway put-gateway-response --rest-api-id $rest_api_id --response-type DEFAULT_4XX \ 
---response-parameters "{\"gatewayresponse.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
-                        \"gatewayresponse.header.Access-Control-Allow-Headers\":\"*\",
-                        \"gatewayresponse.header.Access-Control-Allow-Methods\":\"*\"}"
 
-aws apigateway put-gateway-response --rest-api-id $rest_api_id --response-type DEFAULT_5XX \ 
---response-parameters "{\"gatewayresponse.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\",
-                        \"gatewayresponse.header.Access-Control-Allow-Headers\":\"*\",
-                        \"gatewayresponse.header.Access-Control-Allow-Methods\":\"*\"}"
+aws apigateway put-gateway-response --rest-api-id $rest_api_id --response-type DEFAULT_4XX \
+  --response-parameters "{\"gatewayresponse.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\", 
+                          \"gatewayresponse.header.Access-Control-Allow-Headers\":\"*\", 
+                          \"gatewayresponse.header.Access-Control-Allow-Methods\":\"*\"}"
+						  
+aws apigateway put-gateway-response --rest-api-id $rest_api_id --response-type DEFAULT_5XX \
+  --response-parameters "{\"gatewayresponse.header.Access-Control-Allow-Origin\":\"'$ORIGIN'\", 
+                          \"gatewayresponse.header.Access-Control-Allow-Headers\":\"*\", 
+                          \"gatewayresponse.header.Access-Control-Allow-Methods\":\"*\"}"
 
 ### Deploy again
 
 aws apigateway create-deployment --rest-api-id $rest_api_id  --stage-name dev
 
 
+echo -e "$DATA"
 
 
 
