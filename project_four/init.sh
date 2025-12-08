@@ -203,12 +203,69 @@ aws apigateway create-deployment --rest-api-id $rest_api_id  --stage-name dev
 
 echo -e "$DATA"
 
+### LocalStack does not support cognito-idp in community edition ###
 
+# Create Cognito User Pool
+#USER_POOL_ID=$(aws cognito-idp create-user-pool \
+#  --pool-name "CoffeeShopClient" \
+#  --auto-verified-attributes email \
+#  --username-attributes email \
+#  --schema '[{"Name":"email","AttributeDataType":"String","Mutable":true,"Required":true}]' \
+#  --query 'UserPool.Id' \
+#  --output text)
 
+# Create Cognito User Pool Client
+#CLIENT_ID=$(aws cognito-idp create-user-pool-client \
+#  --user-pool-id "$USER_POOL_ID" \
+#  --client-name "CoffeeShopClientApp" \
+#  --generate-secret \
+#  --allowed-o-auth-flows code \
+#  --allowed-o-auth-scopes "openid" "email" \
+#  --allowed-o-auth-flows-user-pool-client \
+#  --callback-urls '["http://localhost:5173"]' \
+#  --query 'UserPoolClient.ClientId' \
+#  --output text)
+# 
 
+# Create an API Gateway JWT Authorizer
+#aws apigateway create-authorizer \
+#  --endpoint-url=http://localhost:4566 \
+#  --rest-api-id $REST_API_ID \
+#  --name "Cognito-CoffeeShop" \
+#  --type COGNITO_USER_POOLS \
+#  --provider-arns "arn:aws:cognito-idp:us-east-1:000000000000:userpool/$USER_POOL_ID" \
+#  --identity-source "method.request.header.Authorization" \
+#  --region us-east-1
 
+# Attach the Cognito Authorizer to a Method
+#aws apigateway update-method \
+#  --endpoint-url=http://localhost:4566 \
+#  --rest-api-id $REST_API_ID \
+#  --resource-id $RESOURCE_ID \
+#  --http-method GET \
+#  --patch-operations '[ 
+#    { "op": "replace", "path": "/authorizationType", "value": "COGNITO_USER_POOLS" },
+#    { "op": "replace", "path": "/authorizerId", "value": "'$AUTHORIZER_ID'" }
+#  ]'
 
+# How to find the resource ID for /coffee ?
+#aws apigateway get-resources \
+#  --endpoint-url=http://localhost:4566 \
+#  --rest-api-id $REST_API_ID \
+#  --query 'items[?path==`"/coffee"`].id' \
+#  --output text
 
+# Attach Authorizer to GET /coffee
+#aws apigateway update-method \
+#  --rest-api-id $REST_API_ID \
+#  --resource-id $RESOURCE_ID \
+#  --http-method GET \
+#  --patch-operations '[
+#    { "op": "replace", "path": "/authorizationType", "value": "COGNITO_USER_POOLS" },
+#    { "op": "replace", "path": "/authorizerId", "value": "'$AUTHORIZER_ID'" }
+#  ]'
+
+### TO DO: Repeat this for other methods as needed. ###
 
 #aws lambda update-function-code --function-name  getCoffee --zip-file fileb:///etc/localstack/init/ready.d/others/get.zip
 
