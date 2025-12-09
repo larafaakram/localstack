@@ -1,4 +1,4 @@
-from custom_utils import format_response, get_greeting
+from display import format_response, get_greeting
 
 def lambda_handler(event, context):
     name = event.get("queryStringParameters", {}).get("name", "World")
