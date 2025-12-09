@@ -1,0 +1,1 @@
+{"Item":{"name":"Espresso","available":true,"coffeeId":"C001","price":4.5},"$metadata":{"httpStatusCode":200,"requestId":"13b0c35e-c095-47f9-9e13-9c9763fb45dc","attempts":1,"totalRetryDelay":0}}
