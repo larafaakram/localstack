@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  CustomUtilsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: custom-utils-layer
+      ContentUri: ..\..\layers\custom_utils
+      CompatibleRuntimes:
+      - python3.12
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: hello-world-function
+      CodeUri: HelloWorldFunction
+      Handler: app.lambda_handler
+      Layers:
+      - Ref: CustomUtilsLayer
+      Runtime: python3.12
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+    Metadata:
+      SamResourceId: HelloWorldFunction
