@@ -1,0 +1,19 @@
+{
+  "resource": "/{proxy+}",
+  "path": "/data",
+  "httpMethod": "GET",
+  "headers": {
+    "Accept": "application/json"
+  },
+  "queryStringParameters": null,
+  "pathParameters": {
+    "proxy": "/data"
+  },
+  "requestContext": {
+    "resourcePath": "/{proxy+}",
+    "httpMethod": "GET",
+    "stage": "dev"
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

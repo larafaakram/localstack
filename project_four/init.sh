@@ -19,7 +19,7 @@ DATA+="DynamoDB Table Created: $table_name \n"
 # Create API Gateway REST API
 rest_api_name="CoffeeShop"
 description="API for my Lambda function"
-rest_api_id=$(aws apigateway create-rest-api --name $rest_api_name --description "$description" --query 'id' --output text)
+rest_api_id=$(aws apigateway create-rest-api --name $rest_api_name --description $description --query 'id' --output text)
 resource_id=$(aws apigateway get-resources --rest-api-id $rest_api_id --query 'items[0].id' --output text)
 
 DATA+="API Gateway REST API Created: $rest_api_name with ID: $rest_api_id \n"
