@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aws-cdk-lib = "==2.190.0"
+constructs = "<11.0.0,>=10.0.0"
+fastapi = "==0.124.4"
+mangum = "==0.19.0"
+
+[dev-packages]
+aws-cdk-lib = "==2.190.0"
+constructs = "<11.0.0,>=10.0.0"
+pipfile = "*"
+fastapi = "==0.124.4"
+mangum = "==0.19.0"
+
+
+[requires]
+python_version = "3.12"
+python_full_version = "3.12.1"
